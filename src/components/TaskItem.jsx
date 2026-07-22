@@ -1,5 +1,12 @@
 function TaskItem() {
-  return <h2>TaskItem</h2>;
+  return (
+
+    <li className="task-item">
+      <span>o</span>
+      <span>Learn React</span>
+    </li>
+
+  );
 }
 
 export default TaskItem;

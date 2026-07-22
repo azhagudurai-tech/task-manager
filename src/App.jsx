@@ -1,16 +1,15 @@
-import Header from "./components/TaskForm";
+import Header from "./components/Header";
 import TaskForm from "./components/TaskForm";
 import TaskList from "./components/TaskList";
 
 
 function App() {
   return (
-    <div>
-      <h1>Task Manager</h1>
+    <main>
       <Header />
       <TaskForm />
       <TaskList />
-    </div>
+    </main>
   );
 }
 

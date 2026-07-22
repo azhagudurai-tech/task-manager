@@ -1,5 +1,10 @@
 function TaskForm() {
-  return <h2>TaskForm</h2>;
+  return (
+    <section className="task-form">
+      <input type="text" placeholder="Enter a task" />
+      <button>Add Task</button>
+    </section>
+  );
 }
 
-export default TaskForm;
+export default TaskForm;  
