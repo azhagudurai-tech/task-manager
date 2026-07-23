@@ -1,13 +1,17 @@
 import TaskItem from "./TaskItem";
 
-function TaskList() {
+function TaskList({ tasks }) {
   return (
-    <section className="tak-list">
+    <section className="task-list">
       <h2>Tasks</h2>
+
       <ul>
-        <TaskItem />
-        <TaskItem />
-        <TaskItem />
+        {tasks.map((task, index) => (
+          <TaskItem
+            key={index}
+            task={task}
+          />
+        ))}
       </ul>
     </section>
   );

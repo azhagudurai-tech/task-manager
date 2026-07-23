@@ -1,11 +1,9 @@
-function TaskItem() {
+function TaskItem({ task }) {
   return (
-
     <li className="task-item">
-      <span>o</span>
-      <span>Learn React</span>
+      <span>○</span>
+      <span>{task}</span>
     </li>
-
   );
 }
 
