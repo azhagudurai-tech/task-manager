@@ -14,6 +14,10 @@ function App() {
     setTaskInput("");
   }
 
+  function handleDeleteTask(delIndex) {
+    setTasks(tasks.filter((task, index) => index !== delIndex));
+  }
+
   return (
     <main>
       <Header />
@@ -24,7 +28,7 @@ function App() {
         handleAddTask={handleAddTask}
       />
 
-      <TaskList tasks={tasks} />
+      <TaskList tasks={tasks} delTask={handleDeleteTask} />
     </main>
   );
 }
