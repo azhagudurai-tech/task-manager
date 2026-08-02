@@ -15,7 +15,7 @@ main {
   background: white;
   padding: 30px;
   border-radius: 10px;
-  box-shadow: 0 5px 20px rgba(0,0,0,.1);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, .1);
 }
 
 header {
@@ -60,4 +60,17 @@ header h1 {
   border: 1px solid #ddd;
   border-radius: 6px;
   margin-bottom: 10px;
+}
+
+.filters {
+  float: right;
+}
+
+.filters button {
+  margin: 5px;
+  padding: 3px;
+}
+.filters button.active {
+  background: #007bff;
+  color: white;
 }

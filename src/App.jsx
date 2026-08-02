@@ -1,35 +1,56 @@
-import { useState } from "react";
-import Header from "./components/Header";
-import TaskForm from "./components/TaskForm";
-import TaskList from "./components/TaskList";
+import { useContext } from "react";
+import TaskContext from "./context/TaskProvider";
+import Header from "./components/Header"
+import MainContent from "./components/MainContent"
 
 function App() {
-  const [tasks, setTasks] = useState([]);
-  const [taskInput, setTaskInput] = useState("");
 
-  function handleAddTask() {
-    if (taskInput.trim() === "") return;
+  const {
+    tasks,
+    taskInput,
+    setTaskInput,
+    editingTaskId,
+    editInput,
+    setEditInput,
+    filter,
+    setFilter,
+    handleAddTask,
+    handleDeleteTask,
+    handleToggleTask,
+    handleEditTask,
+    handleSaveEdit,
+    handleClearCompleted,
+    handleDeleteAllTasks,
+  } = useContext(TaskContext);
 
-    setTasks([...tasks, taskInput]);
-    setTaskInput("");
-  }
-
-  function handleDeleteTask(delIndex) {
-    setTasks(tasks.filter((task, index) => index !== delIndex));
-  }
+  const displayedTask = tasks.filter((task) => {
+    if (filter === "completed") return task.completed;
+    if (filter === "active") return !task.completed;
+    return true;
+  });
 
   return (
-    <main>
+    <>
+
       <Header />
 
-      <TaskForm
+      <MainContent
         taskInput={taskInput}
         setTaskInput={setTaskInput}
         handleAddTask={handleAddTask}
+        setFilter={setFilter}
+        displayedTask={displayedTask}
+        handleEditTask={handleEditTask}
+        editingTaskId={editingTaskId}
+        editInput={editInput}
+        setEditInput={setEditInput}
+        handleSaveEdit={handleSaveEdit}
+        handleClearCompleted={handleClearCompleted}
+        handleDeleteAllTasks={handleDeleteAllTasks}
       />
 
-      <TaskList tasks={tasks} delTask={handleDeleteTask} />
-    </main>
+    </>
+
   );
 }
 
