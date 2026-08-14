@@ -18,11 +18,6 @@ function TaskList({ tasks, editTask, editTaskId, editInput, setEditInput, handle
                 key={task.id}
                 index={index}
                 task={task}
-                editTask={editTask}
-                editTaskId={editTaskId}
-                editInput={editInput}
-                setEditInput={setEditInput}
-                handleSaveEdit={handleSaveEdit}
               />
             ))}
           </ul>

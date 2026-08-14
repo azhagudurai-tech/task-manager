@@ -1,53 +1,43 @@
-import { useContext } from "react";
-import TaskContext from "./context/TaskProvider";
-import Header from "./components/Header"
 import MainContent from "./components/MainContent"
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import CompletedTasks from "./pages/CompletedTasks";
+import TasksLayout from "./pages/TasksLayout";
+import TaskDetails from "./pages/TaskDetails";
+import OldTasks from "./pages/OldTasks";
+import NotFound from "./pages/NotFound";
+import AppLayout from "./pages/AppLayout";
 
 function App() {
-
-  const {
-    tasks,
-    taskInput,
-    setTaskInput,
-    editingTaskId,
-    editInput,
-    setEditInput,
-    filter,
-    setFilter,
-    handleAddTask,
-    handleDeleteTask,
-    handleToggleTask,
-    handleEditTask,
-    handleSaveEdit,
-    handleClearCompleted,
-    handleDeleteAllTasks,
-  } = useContext(TaskContext);
-
-  const displayedTask = tasks.filter((task) => {
-    if (filter === "completed") return task.completed;
-    if (filter === "active") return !task.completed;
-    return true;
-  });
 
   return (
     <>
 
-      <Header />
+      <Routes>
 
-      <MainContent
-        taskInput={taskInput}
-        setTaskInput={setTaskInput}
-        handleAddTask={handleAddTask}
-        setFilter={setFilter}
-        displayedTask={displayedTask}
-        handleEditTask={handleEditTask}
-        editingTaskId={editingTaskId}
-        editInput={editInput}
-        setEditInput={setEditInput}
-        handleSaveEdit={handleSaveEdit}
-        handleClearCompleted={handleClearCompleted}
-        handleDeleteAllTasks={handleDeleteAllTasks}
-      />
+        <Route element={<AppLayout />}>
+
+          <Route path="*" element={<NotFound />} />
+
+          <Route path="/" element={<Home />} />
+
+          <Route path="/tasks" element={<TasksLayout />}>
+
+            <Route index element={
+              <MainContent />
+            }
+            />
+
+            <Route path="completed" element={<CompletedTasks />} />
+
+            <Route path=":taskId" element={<TaskDetails />} />
+
+            <Route path="old" element={<OldTasks />} />
+
+          </Route>
+
+        </Route>
+      </Routes>
 
     </>
 

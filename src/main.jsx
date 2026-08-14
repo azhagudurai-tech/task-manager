@@ -3,11 +3,17 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { TaskProvider } from "./context/TaskProvider";
+import { BrowserRouter } from "react-router-dom";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <TaskProvider>
-      <App />
-    </TaskProvider>
+    <BrowserRouter>
+      <TaskProvider>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </TaskProvider>
+    </BrowserRouter>
   </StrictMode>
 );

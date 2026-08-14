@@ -1,11 +1,28 @@
-import { useContext } from "react";
+import { useContext, useRef, useEffect, memo } from "react";
 import TaskContext from "../context/TaskProvider";
 
+const TaskItem = memo(function TaskItem({ index, task }) {
 
-function TaskItem({ index, task, ditTask, editTaskId, editInput, setEditInput, handleSaveEdit }) {
+  const editInputRef = useRef(null);
+  const { handleDeleteTask, handleToggleTask, editPriority, setEditPriority, editingTaskId, editInput, setEditInput, handleEditTask, handleSaveEdit, displayedTask, } = useContext(TaskContext);
 
-  const { handleDeleteTask, handleToggleTask } = useContext(TaskContext);
+  function getPriorityBadge(priority) {
+    if (priority === "high") {
+      return "🔴 High";
+    }
 
+    if (priority === "medium") {
+      return "🟡 Medium";
+    }
+
+    return "🟢 Low";
+  }
+
+  useEffect(() => {
+    if (editingTaskId === task.id) {
+      editInputRef.current?.focus();
+    }
+  }, [editingTaskId, task.id]);
 
   return (
     <li className="task-item">
@@ -13,9 +30,10 @@ function TaskItem({ index, task, ditTask, editTaskId, editInput, setEditInput, h
         {task.completed ? "✓" : "○"}
       </span>
 
-      {editTaskId === task.id ? (
+      {editingTaskId === task.id ? (
         <>
           <input
+            ref={editInputRef}
             type="text"
             value={editInput}
             onChange={(e) => setEditInput(e.target.value)}
@@ -24,15 +42,28 @@ function TaskItem({ index, task, ditTask, editTaskId, editInput, setEditInput, h
             }}
           />
 
+          <select value={editPriority} onChange={(e) => setEditPriority(e.target.value)}>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+
           <button onClick={handleSaveEdit}>
             Save
           </button>
         </>
       ) : (
         <>
-          <span>{task.title}</span>
 
-          <button onClick={() => editTask(task)}>
+          <div className="task-details">
+            <span>{task.title}</span>
+
+            <small>
+              {getPriorityBadge(task.priority)}
+            </small>
+          </div>
+
+          <button onClick={() => handleEditTask(task)}>
             Edit
           </button>
         </>
@@ -43,6 +74,6 @@ function TaskItem({ index, task, ditTask, editTaskId, editInput, setEditInput, h
       </button>
     </li>
   );
-}
+});
 
 export default TaskItem;

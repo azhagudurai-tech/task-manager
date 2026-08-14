@@ -2,20 +2,14 @@ import { useContext } from "react";
 import TaskList from "./TaskList";
 import TaskSummary from "./TaskSummary";
 import TaskContext from "../context/TaskProvider";
+import SearchBar from "./SearchBar";
+import SortBar from "./SortBar";
 
-function TaskSection({
-    setFilter,
-    displayedTask,
-    handleEditTask,
-    editingTaskId,
-    editInput,
-    setEditInput,
-    handleSaveEdit,
-    handleClearCompleted,
-    handleDeleteAllTasks,
-}) {
 
-    const { filter } = useContext(TaskContext);
+function TaskSection() {
+
+    const { filter, setFilter, handleClearCompleted, handleDeleteAllTasks, displayedTask, } = useContext(TaskContext);
+
 
     return (
         <section>
@@ -26,13 +20,12 @@ function TaskSection({
                 <button className={filter === "completed" ? "active" : ""} onClick={() => setFilter("completed")} > Completed </button>
             </div>
 
+            <SearchBar />
+
+            <SortBar />
+
             <TaskList
                 tasks={displayedTask}
-                editTask={handleEditTask}
-                editTaskId={editingTaskId}
-                editInput={editInput}
-                setEditInput={setEditInput}
-                handleSaveEdit={handleSaveEdit}
             />
 
             <TaskSummary
