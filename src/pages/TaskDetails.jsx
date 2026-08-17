@@ -1,13 +1,12 @@
-import { useContext } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import TaskContext from "../context/TaskProvider";
+import useTaskContext from "../hooks/useTaskContext";
 
 
 export default function TaskDetails() {
     const navigate = useNavigate();
     const currentLocation = useLocation();
     const { taskId } = useParams();
-    const { tasks } = useContext(TaskContext);
+    const { tasks } = useTaskContext();
 
     const task = tasks.find(task => task.id === Number(taskId));
 

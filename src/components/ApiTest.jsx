@@ -6,10 +6,13 @@ export default function ApiTest() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        const controller = new AbortController();
+
         async function loadData() {
             try {
                 const response = await fetch(
-                    "https://jsonplaceholder.typicode.com/todos"
+                    "https://jsonplaceholder.typicode.com/todos",
+                    { signal: controller.signal }
                 );
 
                 if (!response.ok) {
@@ -20,13 +23,18 @@ export default function ApiTest() {
 
                 setData(result);
             } catch (error) {
-                setError(error.message);
+                if (error.name !== "AbortError")
+                    setError(error.message);
             } finally {
                 setLoading(false);
             }
         }
 
         loadData();
+
+        return () => {
+            controller.abort();
+        }
     }, []);
 
     if (loading) {

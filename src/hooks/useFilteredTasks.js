@@ -25,11 +25,11 @@ export default function useFilteredTasks(
         const sortedTasks = [...filteredTasks];
 
         if (sortBy === "oldest") {
-            sortedTasks.sort((a, b) => a.id - b.id);
+            sortedTasks.sort((a, b) => a.createdAt - b.createdAt);
         }
 
         if (sortBy === "newest") {
-            sortedTasks.sort((a, b) => b.id - a.id);
+            sortedTasks.sort((a, b) => b.createdAt - a.createdAt);
         }
 
         if (sortBy === "az") {

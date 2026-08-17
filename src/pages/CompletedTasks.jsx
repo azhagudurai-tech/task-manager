@@ -1,5 +1,13 @@
+import TaskList from "../components/TaskList";
+import useTaskContext from "../hooks/useTaskContext"
 
 
 export default function CompletedTasks() {
-    return <h4>Completed Tasks</h4>
+    const { tasks } = useTaskContext();
+
+    const completedTasks = tasks.filter((task) => task.completed);
+    return <>
+        <h4>Completed Tasks</h4>
+        <TaskList tasks={completedTasks} />
+    </>
 }

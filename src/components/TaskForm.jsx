@@ -1,23 +1,27 @@
-import { useContext } from "react";
-import TaskContext from "../context/TaskProvider";
+import useTaskContext from "../hooks/useTaskContext";
+import useTaskUIContext from "../hooks/useTaskUIContext";
+
 
 function TaskForm({
   taskInput,
   setTaskInput,
 }) {
 
-  const { handleAddTask, priority, setPriority, } = useContext(TaskContext);
+  const { handleAddTask } = useTaskContext();
+  const { priority, setPriority, } = useTaskUIContext();
 
+  function handleSubmit(event) {
+    event.preventDefault();
+    handleAddTask();
+  }
   return (
-    <section className="task-form">
+    <form className="task-form" onSubmit={handleSubmit}>
       <input
         type="text"
         placeholder="Enter a task"
         value={taskInput}
         onChange={(e) => setTaskInput(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") { handleAddTask() }
-        }}
+
       />
       <select value={priority} onChange={(e) => setPriority(e.target.value)}>
         <option value="low">Low</option>
@@ -25,10 +29,10 @@ function TaskForm({
         <option value="high">High</option>
       </select>
 
-      <button onClick={handleAddTask}>
+      <button type="submit">
         Add Task
       </button>
-    </section>
+    </form>
   );
 }
 

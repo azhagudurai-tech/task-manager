@@ -1,10 +1,10 @@
-import { useContext } from "react";
-import TaskContext from "../context/TaskProvider";
+
 import { NavLink } from "react-router-dom";
+import useTaskContext from "../hooks/useTaskContext";
 
 
 function Header() {
-  const { tasks } = useContext(TaskContext);
+  const { tasks } = useTaskContext();
   return (
     <header>
       <h2>Task Manganer ({tasks.length})</h2>

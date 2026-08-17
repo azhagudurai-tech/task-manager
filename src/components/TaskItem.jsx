@@ -1,10 +1,13 @@
-import { useContext, useRef, useEffect, memo } from "react";
-import TaskContext from "../context/TaskProvider";
+import { useRef, useEffect, memo } from "react";
+import PropTypes from "prop-types";
+import useTaskContext from "../hooks/useTaskContext";
 
-const TaskItem = memo(function TaskItem({ index, task }) {
+const TaskItem = memo(function TaskItem({ task }) {
 
   const editInputRef = useRef(null);
-  const { handleDeleteTask, handleToggleTask, editPriority, setEditPriority, editingTaskId, editInput, setEditInput, handleEditTask, handleSaveEdit, displayedTask, } = useContext(TaskContext);
+  const { handleDeleteTask, handleToggleTask, editPriority, setEditPriority,
+    editingTaskId, editInput, setEditInput, handleEditTask, handleSaveEdit,
+  } = useTaskContext();
 
   function getPriorityBadge(priority) {
     if (priority === "high") {
@@ -75,5 +78,15 @@ const TaskItem = memo(function TaskItem({ index, task }) {
     </li>
   );
 });
+
+TaskItem.propTypes = {
+  task: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    completed: PropTypes.bool.isRequired,
+    priority: PropTypes.oneOf(["low", "medium", "high"]).isRequired,
+    createdAt: PropTypes.number,
+  }).isRequired,
+};
 
 export default TaskItem;

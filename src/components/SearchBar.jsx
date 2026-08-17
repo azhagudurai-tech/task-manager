@@ -1,8 +1,8 @@
-import { useContext } from "react";
-import TaskContext from "../context/TaskProvider";
+import useTaskUIContext from "../hooks/useTaskUIContext";
+
 
 function SearchBar() {
-    const { searchTerm, setSearchTerm } = useContext(TaskContext);
+    const { searchTerm, setSearchTerm } = useTaskUIContext();
 
     return (
         <section className="search-bar">

@@ -1,4 +1,4 @@
-import { createContext, useEffect, useMemo, useReducer, useState } from "react";
+import { createContext, useCallback, useMemo, useReducer, useState } from "react";
 import useLocalStorage from "../hooks/useLocalStorage";
 import useFilteredTasks from "../hooks/useFilteredTasks";
 
@@ -7,14 +7,17 @@ const STORAGE_KEY = "tasks";
 const TaskContext = createContext();
 export default TaskContext;
 
+export const TaskUIContext = createContext();
 
-function taskReducer(state, action) {
+
+export function taskReducer(state, action) {
     switch (action.type) {
         case "ADD_TASK":
             return [
                 ...state,
                 {
-                    id: Date.now(),
+                    id: crypto.randomUUID(),
+                    createdAt: Date.now(),
                     title: action.payload.title,
                     completed: false,
                     priority: action.payload.priority,
@@ -65,18 +68,21 @@ function taskReducer(state, action) {
 function getInitialTasks() {
     const storedTasks = localStorage.getItem(STORAGE_KEY);
 
-    return storedTasks
-        ? JSON.parse(storedTasks)
-        : [];
+    if (storedTasks) {
+        try {
+            return JSON.parse(storedTasks)
+        } catch {
+            return [];
+        }
+    }
+
+    return [];
+
 }
 
 export function TaskProvider({ children }) {
 
-    const [tasks, dispatch] = useReducer(
-        taskReducer,
-        [],
-        getInitialTasks
-    );
+    const [tasks, dispatch] = useReducer(taskReducer, [], getInitialTasks);
 
     const [taskInput, setTaskInput] = useState("");
     const [editingTaskId, setEditingTaskId] = useState(null);
@@ -90,7 +96,7 @@ export function TaskProvider({ children }) {
 
     useLocalStorage(STORAGE_KEY, tasks);
 
-    function handleAddTask() {
+    const handleAddTask = useCallback(() => {
         if (taskInput.trim() === "") return;
 
         dispatch({
@@ -103,30 +109,30 @@ export function TaskProvider({ children }) {
 
         setTaskInput("");
         setPriority("medium");
-    }
+    }, [taskInput, priority]);
 
-    function handleDeleteTask(delId) {
 
+    const handleDeleteTask = useCallback((delId) => {
         dispatch({
             type: "DELETE_TASK",
             payload: delId,
         });
-    }
+    }, []);
 
-    function handleToggleTask(taskId) {
+    const handleToggleTask = useCallback((taskId) => {
         dispatch({
             type: "TOGGLE_TASK",
             payload: taskId,
         });
-    }
+    }, []);
 
-    function handleEditTask(task) {
+    const handleEditTask = useCallback((task) => {
         setEditingTaskId(task.id);
         setEditInput(task.title);
         setEditPriority(task.priority);
-    }
+    }, []);
 
-    function handleSaveEdit() {
+    const handleSaveEdit = useCallback(() => {
         if (editInput.trim() === "") return;
 
         dispatch({
@@ -140,15 +146,15 @@ export function TaskProvider({ children }) {
         setEditingTaskId(null);
         setEditInput("");
         setEditPriority("medium");
-    }
+    }, [editInput, editingTaskId, editPriority]);
 
-    function handleClearCompleted() {
+    const handleClearCompleted = useCallback(() => {
         dispatch({
             type: "CLEAR_COMPLETED",
         });
-    }
+    }, []);
 
-    function handleDeleteAllTasks() {
+    const handleDeleteAllTasks = useCallback(() => {
         const delAll = window.confirm(
             "Are you sure you want to delete all tasks?"
         );
@@ -158,38 +164,32 @@ export function TaskProvider({ children }) {
                 type: "DELETE_ALL",
             });
         }
-    }
+    }, []);
 
     const displayedTask = useFilteredTasks(tasks, filter, searchTerm, sortBy);
 
+    const contextValue = useMemo(() => ({
+        tasks, handleAddTask, handleDeleteTask, handleToggleTask, handleEditTask,
+        handleSaveEdit, handleClearCompleted, handleDeleteAllTasks,
+        editingTaskId, editInput, setEditInput, editPriority, setEditPriority,
+    }), [
+        tasks, handleAddTask, handleDeleteTask, handleToggleTask, handleEditTask,
+        handleSaveEdit, handleClearCompleted, handleDeleteAllTasks,
+        editingTaskId, editInput, editPriority,
+    ]);
+
+    const contextUIValue = useMemo(() => ({
+        taskInput, setTaskInput, filter, setFilter, searchTerm, setSearchTerm,
+        sortBy, setSortBy, priority, setPriority, displayedTask,
+    }), [
+        taskInput, filter, searchTerm, sortBy, priority, displayedTask,
+    ]);
+
     return (
-        <TaskContext.Provider value={{
-            tasks,
-            taskInput,
-            setTaskInput,
-            editingTaskId,
-            editInput,
-            setEditInput,
-            filter,
-            setFilter,
-            handleAddTask,
-            handleDeleteTask,
-            handleToggleTask,
-            handleEditTask,
-            handleSaveEdit,
-            handleClearCompleted,
-            handleDeleteAllTasks,
-            searchTerm,
-            setSearchTerm,
-            displayedTask,
-            sortBy,
-            setSortBy,
-            priority,
-            setPriority,
-            editPriority,
-            setEditPriority,
-        }}>
-            {children}
+        <TaskContext.Provider value={contextValue}>
+            <TaskUIContext.Provider value={contextUIValue}>
+                {children}
+            </TaskUIContext.Provider>
         </TaskContext.Provider>
     );
 }

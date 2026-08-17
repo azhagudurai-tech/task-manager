@@ -1,12 +1,9 @@
-import { useContext } from "react";
-import TaskContext from "../context/TaskProvider";
+import useTaskUIContext from "../hooks/useTaskUIContext";
+
 
 function SortBar() {
 
-    const {
-        sortBy,
-        setSortBy,
-    } = useContext(TaskContext);
+    const { sortBy, setSortBy, } = useTaskUIContext();
 
     return (
         <section className="sort-bar">

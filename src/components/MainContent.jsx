@@ -1,12 +1,11 @@
-import { useContext } from "react";
+import useTaskUIContext from "../hooks/useTaskUIContext";
 import TaskForm from "./TaskForm";
 import TaskSection from "./TaskSection";
-import TaskContext from "../context/TaskProvider";
 
 
 function MainContent() {
 
-    const {  taskInput, setTaskInput } = useContext(TaskContext);
+    const { taskInput, setTaskInput } = useTaskUIContext();
 
     return (
         <main>

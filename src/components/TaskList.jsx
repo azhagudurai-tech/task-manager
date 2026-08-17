@@ -1,8 +1,6 @@
-import { useContext } from "react";
 import TaskItem from "./TaskItem";
-import TaskContext from "../context/TaskProvider";
 
-function TaskList({ tasks, editTask, editTaskId, editInput, setEditInput, handleSaveEdit }) {
+function TaskList({ tasks }) {
 
   return (
     <section className="task-list">

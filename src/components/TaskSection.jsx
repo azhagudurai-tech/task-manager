@@ -1,14 +1,15 @@
-import { useContext } from "react";
+import useTaskContext from "../hooks/useTaskContext";
+import useTaskUIContext from "../hooks/useTaskUIContext";
 import TaskList from "./TaskList";
 import TaskSummary from "./TaskSummary";
-import TaskContext from "../context/TaskProvider";
 import SearchBar from "./SearchBar";
 import SortBar from "./SortBar";
 
 
 function TaskSection() {
 
-    const { filter, setFilter, handleClearCompleted, handleDeleteAllTasks, displayedTask, } = useContext(TaskContext);
+    const { handleClearCompleted, handleDeleteAllTasks } = useTaskContext();
+    const { filter, setFilter, displayedTask } = useTaskUIContext();
 
 
     return (
