@@ -5,15 +5,18 @@ import App from "./App";
 import { TaskProvider } from "./context/TaskProvider";
 import { BrowserRouter } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { AuthProvider } from "./context/AuthProvider";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <BrowserRouter>
-      <TaskProvider>
-        <ErrorBoundary>
-          <App />
-        </ErrorBoundary>
-      </TaskProvider>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <TaskProvider>
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
+        </TaskProvider>
+      </BrowserRouter>
+    </AuthProvider>
   </StrictMode>
 );

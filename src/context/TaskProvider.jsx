@@ -1,8 +1,7 @@
-import { createContext, useCallback, useMemo, useReducer, useState } from "react";
-import useLocalStorage from "../hooks/useLocalStorage";
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState } from "react";
 import useFilteredTasks from "../hooks/useFilteredTasks";
+import AuthContext from "./AuthProvider";
 
-const STORAGE_KEY = "tasks";
 
 const TaskContext = createContext();
 export default TaskContext;
@@ -12,17 +11,11 @@ export const TaskUIContext = createContext();
 
 export function taskReducer(state, action) {
     switch (action.type) {
+        case "SET_TASK":
+            return action.payload
+
         case "ADD_TASK":
-            return [
-                ...state,
-                {
-                    id: crypto.randomUUID(),
-                    createdAt: Date.now(),
-                    title: action.payload.title,
-                    completed: false,
-                    priority: action.payload.priority,
-                },
-            ];
+            return [...state, action.payload];
 
         case "DELETE_TASK":
             return state.filter(task => task.id !== action.payload);
@@ -65,24 +58,9 @@ export function taskReducer(state, action) {
 }
 
 
-function getInitialTasks() {
-    const storedTasks = localStorage.getItem(STORAGE_KEY);
-
-    if (storedTasks) {
-        try {
-            return JSON.parse(storedTasks)
-        } catch {
-            return [];
-        }
-    }
-
-    return [];
-
-}
-
 export function TaskProvider({ children }) {
-
-    const [tasks, dispatch] = useReducer(taskReducer, [], getInitialTasks);
+    const { token } = useContext(AuthContext);
+    const [tasks, dispatch] = useReducer(taskReducer, []);
 
     const [taskInput, setTaskInput] = useState("");
     const [editingTaskId, setEditingTaskId] = useState(null);
@@ -93,38 +71,91 @@ export function TaskProvider({ children }) {
     const [priority, setPriority] = useState("medium");
     const [editPriority, setEditPriority] = useState("medium");
 
+    useEffect(() => {
 
-    useLocalStorage(STORAGE_KEY, tasks);
+        if (!token) return;
 
-    const handleAddTask = useCallback(() => {
+        async function loadTask() {
+            const response = await fetch("http://localhost:3000/tasks", {
+                method: "GET",
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const data = await response.json();
+
+            const transformed = data.map((item) => ({
+                id: item.task_id,
+                title: item.task_name,
+                completed: item.task_status === 1,
+                priority: item.task_priority
+            }));
+
+            dispatch({ type: "SET_TASK", payload: transformed });
+
+        }
+        loadTask();
+
+    }, [token]);
+
+
+    const handleAddTask = useCallback(async () => {
         if (taskInput.trim() === "") return;
+
+        const response = await fetch("http://localhost:3000/tasks", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ title: taskInput, priority: priority }),
+        });
+
+        const newTask = await response.json();
 
         dispatch({
             type: "ADD_TASK",
-            payload: {
-                title: taskInput,
-                priority: priority,
-            }
+            payload: newTask,
         });
 
         setTaskInput("");
         setPriority("medium");
-    }, [taskInput, priority]);
+    }, [taskInput, priority, token]);
 
 
-    const handleDeleteTask = useCallback((delId) => {
+    const handleDeleteTask = useCallback(async (delId) => {
+
+        const response = await fetch(`http://localhost:3000/tasks/${delId}`,
+            {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+        const result = await response.json();
+
         dispatch({
             type: "DELETE_TASK",
             payload: delId,
         });
-    }, []);
+    }, [token]);
 
-    const handleToggleTask = useCallback((taskId) => {
+    const handleToggleTask = useCallback(async (taskId) => {
+
+        const response = await fetch(`http://localhost:3000/tasks/${taskId}/toggle`, {
+            method: "PATCH",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        const result = await response.json();
+
         dispatch({
             type: "TOGGLE_TASK",
             payload: taskId,
         });
-    }, []);
+    }, [token]);
 
     const handleEditTask = useCallback((task) => {
         setEditingTaskId(task.id);
@@ -132,8 +163,21 @@ export function TaskProvider({ children }) {
         setEditPriority(task.priority);
     }, []);
 
-    const handleSaveEdit = useCallback(() => {
+    const handleSaveEdit = useCallback(async () => {
         if (editInput.trim() === "") return;
+
+        const response = await fetch(`http://localhost:3000/tasks/${editingTaskId}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ taskname: editInput, priority: editPriority })
+            }
+        );
+
+
 
         dispatch({
             type: "SAVE_EDIT",
@@ -146,7 +190,7 @@ export function TaskProvider({ children }) {
         setEditingTaskId(null);
         setEditInput("");
         setEditPriority("medium");
-    }, [editInput, editingTaskId, editPriority]);
+    }, [editInput, editingTaskId, editPriority, token]);
 
     const handleClearCompleted = useCallback(() => {
         dispatch({

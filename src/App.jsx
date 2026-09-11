@@ -1,12 +1,13 @@
 import MainContent from "./components/MainContent"
 import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
 import CompletedTasks from "./pages/CompletedTasks";
 import TasksLayout from "./pages/TasksLayout";
 import TaskDetails from "./pages/TaskDetails";
 import OldTasks from "./pages/OldTasks";
 import NotFound from "./pages/NotFound";
 import AppLayout from "./pages/AppLayout";
+import Login from "./pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
 
@@ -15,18 +16,15 @@ function App() {
 
       <Routes>
 
+        <Route path="/" element={<Login />} />
+
         <Route element={<AppLayout />}>
 
           <Route path="*" element={<NotFound />} />
 
-          <Route path="/" element={<Home />} />
+          <Route path="/tasks" element={<ProtectedRoute><TasksLayout /></ProtectedRoute>}>
 
-          <Route path="/tasks" element={<TasksLayout />}>
-
-            <Route index element={
-              <MainContent />
-            }
-            />
+            <Route index element={<MainContent />} />
 
             <Route path="completed" element={<CompletedTasks />} />
 
